@@ -21,7 +21,16 @@ class Neuron:
     # Applies the first matching rule
     def apply_rules(self):
         for rule in self.rules:
-            if rule['condition'](self.spike_count) and self.spike_count >= rule['consume']:
+            threshold = rule.get('condition_threshold')
+            condition = rule.get('condition')
+
+            condition_met = False
+            if threshold is not None:
+                condition_met = self.spike_count >= threshold
+            elif callable(condition):
+                condition_met = condition(self.spike_count)
+
+            if condition_met and self.spike_count >= rule['consume']:
                 self.spike_count -= rule['consume']
                 self.pending_spikes.append((rule['delay'], rule['produce']))
                 if self.verbose:
