@@ -1,5 +1,6 @@
 import cupy as cp
 from cuda.apply_rules_kernel import apply_rules_multi_kernel
+import matplotlib.pyplot as plt
 
 # Manages the full SN P system: neurons and their communication
 class SNSystem:
@@ -10,6 +11,7 @@ class SNSystem:
         self.synapses = []
         self.gpu_initialized = False
         self.delay_buffer = [[] for _ in range(10)]
+        self.spike_history = {}
 
     def init_gpu(self):
         neurons = list(self.neurons.values())
@@ -98,12 +100,31 @@ class SNSystem:
                 self.delay_buffer[delay].append((target_id, amount))
             else:
                 print(f"Delay {delay} too big, spike dropped!")
-                
+
     def run(self, ticks):
         for t in range(ticks):
             if self.verbose:
                 print(f"\nTick {t}")
+
             self.tick()
+
+            for n_id, neuron in self.neurons.items():
+                if n_id not in self.spike_history:
+                    self.spike_history[n_id] = []
+                self.spike_history[n_id].append(neuron.spike_count)
+
             if self.verbose:
                 for n in self.neurons.values():
                     print(n)
+    
+    def plot_spike_evolution(self):
+        plt.figure(figsize=(10, 6))
+        for neuron_id, spikes in self.spike_history.items():
+            plt.plot(spikes, label=neuron_id)
+        plt.xlabel("Tick")
+        plt.ylabel("Spike Count")
+        plt.title("Neuron Spike Evolution Over Time")
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
