@@ -23,6 +23,6 @@ def test_spike_propagation_chain():
     print("\n== Rezultat ==")
     assert sn.neurons["N3"].spike_count == 1, "Spike-ul nu a ajuns în N3"
     print("Test trecut: spike-ul a ajuns în N3 corect!")
-# Rulează testul
+
 if __name__ == "__main__":
     test_spike_propagation_chain()
