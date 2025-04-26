@@ -3,7 +3,7 @@ from src.synapse import Synapse
 from src.system import SNSystem
 
 def test_load_from_file():
-    sn = SNSystem(verbose=True)
+    sn = SNSystem(verbose=True, use_gpu=False)
     sn.load_from_file("./tests/example_model.snps")
 
     sn.run(6)
